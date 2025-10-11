@@ -1,0 +1,12 @@
+/* public/css/style.css */
+body{font-family: Arial, sans-serif;background:#f7f7f7;color:#222;margin:0;padding:0}
+.container{max-width:800px;margin:30px auto;padding:20px;background:#fff;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+header h1{margin:0}
+input, textarea{width:100%;padding:8px;margin-top:6px;margin-bottom:12px;border:1px solid #ccc;border-radius:4px}
+button{padding:8px 14px;border:none;border-radius:4px;background:#2b87f0;color:#fff;cursor:pointer}
+button:hover{background:#236fd4}
+.message{border-top:1px dashed #eee;padding:12px 0}
+.message header{display:flex;justify-content:space-between;font-size:.9em;color:#555}
+.flash{padding:10px;border-radius:4px;margin-bottom:12px}
+.flash.success{background:#e6ffed;border:1px solid #b7f0c8}
+.flash.error{background:#ffecec;border:1px solid #f0b7b7}

@@ -1,0 +1,33 @@
+-- database/seed_messages.sql
+-- Insère 30 messages de test dans la table messages
+
+INSERT INTO messages (author, content) VALUES
+('Alice', 'Super site, merci !'),
+('Bob', 'Bravo pour le travail.'),
+('Claire', 'Très instructif.'),
+('David', 'J\'adore ce projet.'),
+('Emma', 'Merci pour les ressources.'),
+('Fred', 'Cool !'),
+('Gina', 'Continuez comme ça.'),
+('Hugo', 'Excellent tutoriel.'),
+('Iris', 'Très utile.'),
+('Jean', 'Merci !'),
+('Katy', 'Top.'),
+('Léo', 'Impeccable.'),
+('Maya', 'Je recommande.'),
+('Nils', 'Beau travail.'),
+('Olga', 'Inspirant.'),
+('Paul', 'Très bon contenu.'),
+('Quentin', 'J\'ai appris beaucoup.'),
+('Rita', 'Merci pour le partage.'),
+('Sam', 'Facile à suivre.'),
+('Tania', 'Parfait pour débuter.'),
+('Ugo', 'Merci !'),
+('Vera', 'Superbe.'),
+('Walt', 'Impressionnant.'),
+('Xena', 'Génial.'),
+('Yves', 'Très pratique.'),
+('Zoé', 'Merci.'),
+('Aline', 'Excellente ressource.'),
+('Brice', 'Merci pour le guide.'),
+('Cécile', 'Bravo !');
