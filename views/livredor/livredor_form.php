@@ -31,6 +31,6 @@ if (!function_exists('url')) {
             <textarea id="content" name="content" rows="4" required></textarea>
         </div>
 
-        <button type="submit">Envoyer</button>
+        <button type="submit" class="btn btn-primary btn-submit">Ajouter</button>
     </form>
 </section>

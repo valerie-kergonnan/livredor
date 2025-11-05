@@ -1,83 +1,70 @@
 <?php
-// page livre /index
+// views/livredor/index.php
+// Page principale du livre d'or — affiche le formulaire et chaque message comme une page
 ?>
-<?php include __DIR__ . '/_flash.php'; ?>
 
-<?php include __DIR__ . '/livredor_form.php'; ?>
+<?php if (!empty($flash)): ?>
+    <?php foreach ($flash as $type => $msgs): ?>
+        <?php foreach ((array) $msgs as $msg): ?>
+            <div class="alert alert-<?php echo e($type); ?>"><?php echo e($msg); ?></div>
+        <?php endforeach; ?>
+    <?php endforeach; ?>
+<?php endif; ?>
+
+<?php // include the form partial ?>
+<?php include VIEW_PATH . '/livredor/livredor_form.php'; ?>
 
 <section class="livredor-book">
     <h2>Le Livre d'or</h2>
-    <?php if (empty($messages)): ?>
-        <p>Aucun message pour le moment.</p>
-    <?php else: ?>
-        <nav class="book-toc">
-            <h3>Table des matières</h3>
-            <ul>
-            <?php $j = 0; foreach ($messages as $m): $j++;
-                $parts = preg_split('/\s+/', trim($m['author']));
-                $initial = strtoupper(substr($parts[0] ?? '', 0, 1));
-                $date = $m['created_at'] ?? '';
-                // create a short excerpt (max 60 chars) from the raw content
-                $rawExcerpt = strip_tags($m['content'] ?? '');
-                $excerpt = mb_substr(trim(preg_replace('/\s+/', ' ', $rawExcerpt)), 0, 60, 'UTF-8');
-                if (mb_strlen($rawExcerpt, 'UTF-8') > 60) $excerpt .= '…';
-            ?>
-                <li>
-                    <a href="#" data-target-page="<?= $j ?>" class="toc-link">
-                        <span class="toc-initial"><?= e($initial) ?></span>
-                        <span class="toc-meta">
-                            <span class="toc-name"><?= e($m['author']) ?></span>
-                            <span class="toc-date"><?= e($date) ?></span>
-                            <span class="toc-excerpt"><?= e($excerpt) ?></span>
-                        </span>
-                    </a>
-                </li>
-            <?php endforeach; ?>
-            </ul>
-        </nav>
 
-        <div class="book" data-total-pages="<?= count($messages) ?>">
-            <div class="book-inner">
-                <?php $i = 0; foreach ($messages as $msg): $i++;
-                    $parts = preg_split('/\s+/', trim($msg['author']));
-                    $initial = strtoupper(substr($parts[0] ?? '', 0, 1));
-                    // work with raw content from DB, escape once when outputting
-                    $raw = $msg['content'] ?? '';
-                    $escaped = e($raw);
-                    // for the dropcap we need first unicode char and the rest
-                    $firstChar = mb_substr($raw, 0, 1, 'UTF-8');
-                    $rest = mb_substr($raw, 1, null, 'UTF-8');
-                    // escape the pieces for safe output
-                    $firstCharEsc = e($firstChar);
-                    $restEsc = nl2br(e($rest));
-                ?>
-                    <div class="book-page" data-page="<?= $i ?>">
-                        <div class="page-content">
-                            <header class="page-header-compact">
-                                <div class="avatar"><span><?= e($initial) ?></span></div>
-                                <div class="page-heading">
-                                    <h3 class="page-author"><?= e($msg['author']) ?></h3>
-                                    <div class="page-meta"><time><?= e($msg['created_at']) ?></time></div>
-                                </div>
-                            </header>
-                            <article class="page-body"><span class="dropcap"><?= $firstCharEsc ?></span><span class="rest"><?= $restEsc ?></span></article>
+    <div class="book" data-total-pages="<?php echo count($messages); ?>">
+        <div class="book-inner">
+            <?php foreach ($messages as $i => $m): $page = $i + 1; ?>
+                <div class="book-page" data-page="<?php echo $page; ?>" <?php echo ($i === 0) ? 'aria-current="true"' : ''; ?>>
+                    <div class="page-content">
+                        <header class="page-header-compact">
+                            <div class="avatar"><span><?php echo e(strtoupper(mb_substr($m['author'], 0, 1))); ?></span></div>
+                            <div class="page-heading">
+                                <h3 class="page-author"><a href="<?php echo url('livredor/show/' . $m['id']); ?>"><?php echo e($m['author']); ?></a></h3>
+                                <div class="page-meta"><time><?php echo e($m['created_at']); ?></time></div>
+                            </div>
+                        </header>
 
-                            <!-- Replies feature removed -->
-                        </div>
+                        <article class="page-body">
+                            <?php $plain = trim(strip_tags($m['content'])); ?>
+                            <span class="dropcap"><?php echo e(mb_substr($plain, 0, 1)); ?></span>
+                            <span class="rest"><?php echo e(mb_substr($plain, 1)); ?></span>
+                        </article>
+
+                        <p style="margin-top:1rem;"><a class="btn btn-secondary ajax-view" href="<?php echo url('livredor/show/' . $m['id']); ?>?ajax=1">Voir</a></p>
                     </div>
-                <?php endforeach; ?>
-            </div>
-
-            <div class="book-controls">
-                <button class="btn btn-secondary btn-prev">&larr; Précédent</button>
-                <div class="page-indicator">Page <span class="current">1</span> / <span class="total"><?= count($messages) ?></span></div>
-                <button class="btn btn-primary btn-next">Suivant &rarr;</button>
-            </div>
+                </div>
+            <?php endforeach; ?>
         </div>
-    <?php endif; ?>
+
+        <div class="book-controls">
+            <button class="btn btn-secondary btn-prev">&larr; Précédent</button>
+            <div class="page-indicator">Page <span class="current">1</span> / <span class="total"><?php echo max(1, count($messages)); ?></span></div>
+            <button class="btn btn-primary btn-next">Suivant &rarr;</button>
+        </div>
+        <div class="book-pager" style="margin-top:1rem; text-align:center;">
+            <?php $total = max(1, count($messages)); ?>
+            <?php for ($p = 1; $p <= $total; $p++): ?>
+                <a href="<?php echo url('livredor') . '?page=' . $p; ?>" class="pager-link" data-page="<?php echo $p; ?>" style="display:inline-block; margin:0 4px; padding:6px 8px; border-radius:4px;"><?php echo $p; ?></a>
+            <?php endfor; ?>
+        </div>
+    </div>
+
 </section>
 
-<?php // include book script (app.js already handles form UX); book.js handles pages ?>
-<?php if (isset($route) && ($route === 'livredor' || strpos($route, 'livredor/') === 0)) : ?>
-    <script src="/assets/js/book.js"></script>
-<?php endif; ?>
+<script src="/assets/js/book.js"></script>
+
+<!-- Modal overlay for AJAX message view -->
+<div id="livredor-modal" class="livredor-modal" aria-hidden="true" style="display:none;">
+    <div class="livredor-modal-backdrop"></div>
+    <div class="livredor-modal-panel" role="dialog" aria-modal="true">
+        <button class="livredor-modal-close" aria-label="Fermer">×</button>
+        <div class="livredor-modal-content"></div>
+    </div>
+</div>
+

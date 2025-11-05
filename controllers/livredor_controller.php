@@ -12,13 +12,40 @@ class LivredorController {
         // replies feature removed
     }
 
-    // replyStore removed
+    // replies feature was removed
 
     // affiche la page du livre d'or
     public function index() {
         $messages = $this->model->all();
     $flash = get_flash_messages();
     view('livredor/index', ['messages' => $messages, 'flash' => $flash]);
+    }
+
+    // afficher un message individuel
+    public function show($id = null) {
+        if ($id === null) {
+            load_404();
+            return;
+        }
+        $m = $this->model->find((int) $id);
+        if (!$m) {
+            load_404();
+            return;
+        }
+        // find neighbours for prev/next navigation
+        $prev = $this->model->previous((int) $id);
+        $next = $this->model->next((int) $id);
+        // Si requête AJAX (param ajax=1), retourner la vue partielle sans layout
+        if (!empty($_GET['ajax'])) {
+            // expose $message for the partial
+            $message = $m;
+            $prevMessage = $prev;
+            $nextMessage = $next;
+            include VIEW_PATH . '/livredor/show_partial.php';
+            return;
+        }
+
+        view('livredor/show', ['message' => $m, 'prev' => $prev, 'next' => $next]);
     }
 
     // traite la soumission du formulaire
@@ -81,4 +108,12 @@ if (!function_exists('livredor_store')) {
     }
 }
 
-// replies routes removed
+if (!function_exists('livredor_show')) {
+    function livredor_show(...$params) {
+        $pdo = function_exists('db_connect') ? db_connect() : null;
+        $controller = new LivredorController($pdo);
+        return call_user_func_array([$controller, 'show'], $params);
+    }
+}
+
+// no additional routes

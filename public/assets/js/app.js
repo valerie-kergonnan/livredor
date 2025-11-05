@@ -256,3 +256,111 @@ function ajax(url, options = {}) {
             throw error;
         });
 } 
+
+    // AJAX modal for livredor individual pages
+    document.addEventListener('DOMContentLoaded', function() {
+        var lastTrigger = null;
+
+        function trapFocus(modal) {
+            var focusable = modal.querySelectorAll('a, button, input, textarea, [tabindex]');
+            focusable = Array.prototype.filter.call(focusable, function(el){ return !el.hasAttribute('disabled'); });
+            if (!focusable.length) return;
+            var first = focusable[0];
+            var last = focusable[focusable.length - 1];
+            modal.addEventListener('keydown', function(e){
+                if (e.key !== 'Tab') return;
+                if (e.shiftKey && document.activeElement === first) {
+                    e.preventDefault(); last.focus();
+                } else if (!e.shiftKey && document.activeElement === last) {
+                    e.preventDefault(); first.focus();
+                }
+            });
+            // focus the first focusable element inside the modal
+            setTimeout(function(){ if (first) first.focus(); }, 10);
+        }
+
+        function openModal(html, trigger) {
+            var modal = document.getElementById('livredor-modal');
+            if (!modal) return;
+            var content = modal.querySelector('.livredor-modal-content');
+            content.innerHTML = html;
+            modal.style.display = 'flex';
+            modal.setAttribute('aria-hidden', 'false');
+            lastTrigger = trigger || document.activeElement;
+            trapFocus(modal);
+        }
+
+        function closeModal() {
+            var modal = document.getElementById('livredor-modal');
+            if (!modal) return;
+            modal.style.display = 'none';
+            modal.setAttribute('aria-hidden', 'true');
+            try { if (lastTrigger && typeof lastTrigger.focus === 'function') lastTrigger.focus(); } catch(e) {}
+            lastTrigger = null;
+        }
+
+        document.body.addEventListener('click', function(e) {
+            var a = e.target.closest && e.target.closest('a.ajax-view');
+            if (!a) return;
+            e.preventDefault();
+            var url = a.getAttribute('href');
+            // Fetch partial HTML and open modal, then pushState so the URL is shareable
+            fetch(url, { credentials: 'same-origin' })
+                .then(function(resp) { return resp.text(); })
+                .then(function(html) {
+                    openModal(html, a);
+                    try {
+                        // push a URL without the ajax=1 param for shareable link
+                        var shareUrl = url.replace(/[?&]ajax=1/, '');
+                        history.pushState({ modal: true }, '', shareUrl);
+                    } catch (err) {
+                        console.warn('pushState unavailable', err);
+                    }
+                })
+                .catch(function(err) { console.error(err); });
+        });
+
+        // close buttons
+        document.body.addEventListener('click', function(e) {
+            if (e.target.matches('.livredor-modal-close') || e.target.matches('.livredor-modal-backdrop')) {
+                closeModal();
+            }
+        });
+
+        // Handle back/forward navigation: close modal on popstate when needed
+        window.addEventListener('popstate', function(e) {
+            var modal = document.getElementById('livredor-modal');
+            if (!modal) return;
+            // If state indicates modal or current URL points to show/*, try to load it; otherwise close
+            if (e.state && e.state.modal) {
+                // load the current location as partial
+                var url = location.pathname + location.search;
+                if (url.indexOf('ajax=1') === -1) {
+                    // request partial version
+                    var purl = url + (url.indexOf('?') === -1 ? '?ajax=1' : '&ajax=1');
+                    fetch(purl, { credentials: 'same-origin' })
+                        .then(function(resp) { return resp.text(); })
+                        .then(function(html) { openModal(html); })
+                        .catch(function(err) { console.error(err); });
+                }
+            } else {
+                // close modal if open
+                if (modal.style.display !== 'none') {
+                    closeModal();
+                }
+            }
+        });
+
+        // Close modal on Escape and restore history if necessary
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                var modal = document.getElementById('livredor-modal');
+                if (modal && modal.style.display !== 'none') {
+                    closeModal();
+                    if (history.state && history.state.modal) {
+                        try { history.back(); } catch (err) { /* ignore */ }
+                    }
+                }
+            }
+        });
+    });

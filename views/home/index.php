@@ -1,47 +1,39 @@
 <div class="hero">
     <div class="hero-content">
         <h1><?php e($message); ?></h1>
-        <p class="hero-subtitle">Un starter kit PHP avec architecture MVC procédurale</p>
-        <div class="hero-buttons">
-            <a href="<?php echo url('#'); ?>" class="btn btn-primary">Commencer</a>
-            <a href="<?php echo url('#'); ?>" class="btn btn-secondary">Documentation</a>
-        </div>
+        <p class="hero-title">Mon livre d'or</p>
     </div>
 </div>
 
-<section class="features">
-    <div class="container">
-        <h2>Fonctionnalités incluses</h2>
-        <div class="features-grid">
-            <?php foreach ($features as $feature): ?>
-                <div class="feature-card">
-                    <i class="fas fa-check-circle"></i>
-                    <h3><?php e($feature); ?></h3>
-                </div>
-            <?php endforeach; ?>
+<!-- Présentation / texte d'accueil -->
+<section class="home-intro">
+    <div class="home-container">
+        <div class="intro-card">
+            <p>Bienvenue sur notre livre d’or, un espace dédié à vos mots, vos impressions et vos émotions.
+
+                Chaque message que vous laisserez ici est une trace précieuse, un souvenir partagé, un écho de votre passage. Vos témoignages nous touchent, nous inspirent et donnent vie à ce lieu à travers vos regards et vos expériences.
+
+                Prenez un instant pour écrire quelques lignes, un simple merci, une pensée, ou même un souvenir marquant. Ces mots, petits ou grands, font partie de l’histoire que nous construisons ensemble.
+
+                Merci de votre visite et de votre confiance. Laissez parler votre cœur… votre plume est la plus belle des empreintes.</p>
         </div>
     </div>
 </section>
 
-<section class="getting-started">
+<section class="features">
     <div class="container">
-        <h2>Commencer rapidement</h2>
-        <div class="steps">
-            <div class="step">
-                <div class="step-number">1</div>
-                <h3>Configuration</h3>
-                <p>Configurez votre base de données dans <code>config/database.php</code></p>
-            </div>
-            <div class="step">
-                <div class="step-number">2</div>
-                <h3>Développement</h3>
-                <p>Créez vos contrôleurs, modèles et vues dans leurs dossiers respectifs</p>
-            </div>
-            <div class="step">
-                <div class="step-number">3</div>
-                <h3>Déploiement</h3>
-                <p>Uploadez votre application sur votre serveur web</p>
-            </div>
+
+        <div class="features-grid">
+            <?php if (!empty($features) && is_array($features)): ?>
+                <?php foreach ($features as $feature): ?>
+                    <div class="feature-card">
+                        <i class="fas fa-check-circle"></i>
+                        <h3><?php e($feature); ?></h3>
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <!-- Pas de fonctionnalités définies — ne rien afficher. -->
+            <?php endif; ?>
         </div>
     </div>
 </section>

@@ -7,14 +7,8 @@
 function home_index() {
     $data = [
         'title' => 'Accueil',
-        'message' => 'Bienvenue sur votre application PHP MVC !',
-        'features' => [
-            'Architecture MVC claire',
-            'Système de routing simple',
-            'Templating HTML/CSS',
-            'Gestion de base de données',
-            'Sécurité intégrée'
-        ]
+        'message' => 'Bienvenue sur mon livre d\'or !',
+        
     ];
     
     load_view_with_layout('home/index', $data);
