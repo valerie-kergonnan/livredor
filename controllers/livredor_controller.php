@@ -32,7 +32,7 @@ class LivredorController {
             load_404();
             return;
         }
-        // find neighbours for prev/next navigation
+        
         $prev = $this->model->previous((int) $id);
         $next = $this->model->next((int) $id);
         // Si requête AJAX (param ajax=1), retourner la vue partielle sans layout

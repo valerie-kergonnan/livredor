@@ -33,7 +33,8 @@ function create_user($first_name, $last_name, $email, $password){
 
 // authentification de  l'utilisateur
 function authenticate_user($email, $password){
-    $user = db_select_one("SELECT * FROM users WHERE email = ?", [$email]);
+    $user = 
+    db_select_one("SELECT * FROM users WHERE email = ?", [$email]);
     if ($user && isset($user['password']) && password_verify($password, $user['password'])) {
         return $user;
     }
